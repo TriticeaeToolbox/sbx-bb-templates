@@ -15,3 +15,9 @@ commands:
     - command: "claude plugin install generate-breedbase-templates@t3-marketplace"
       user: "1000"
       description: "Add Generate Breedbase Templates plugin"
+
+agentContext: |
+  The project directory should contain breeder-provided data that needs to be converted into
+  standardized breedbase upload templates.  First, ask the user to briefly describe the data:
+  such as the crop, breeding program, and anything that is unique about this dataset that may
+  be difficult to process.  Then, use the /generate-breedbase-templates skill to start the workflow.

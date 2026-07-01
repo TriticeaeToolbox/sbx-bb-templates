@@ -24,9 +24,6 @@ while getopts "dt" opt; do
 done
 shift $((OPTIND-1))
 
-# name of base template to use
-TEMPLATE="docker/sandbox-templates:claude-code-docker"
-
 # path to kit directory (parent dir of this script)
 KIT_DIR="$(dirname "$(readlink -f "$0")")"
 
@@ -66,10 +63,9 @@ else
     # Create a new sandbox (using create or run command)
     echo "--> Starting sandbox in workspace $WS_DIR..."
     echo "    name: $NAME"
-    echo "    template: $TEMPLATE"
     echo "    kit: $KIT_DIR"
     echo "    command: $CMD"
 
-    sbx $CMD --name "$NAME" --template "$TEMPLATE" claude --kit "$KIT_DIR" "$WS_DIR" $ARGS
+    sbx $CMD --name "$NAME" claude-bb-templates --kit "$KIT_DIR" "$WS_DIR" $ARGS
 
 fi

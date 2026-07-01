@@ -1,20 +1,31 @@
 schemaVersion: "1"
-kind: mixin
-name: bb-templates
+kind: sandbox
+name: claude-bb-templates
 displayName: Generate BB Templates
 description: Adds the generate-breedbase-templates skill and some additional python dependencies
 
-commands:
-  install:
-    - command: "apt-get update && apt-get install -y python3-openpyxl python3-pandas"
-      user: "0"
-      description: "Install additional python dependencies"
-    - command: "claude plugin marketplace add TriticeaeToolbox/t3-marketplace"
-      user: "1000"
-      description: "Add T3 plugin marketplace"
-    - command: "claude plugin install generate-breedbase-templates@t3-marketplace"
-      user: "1000"
-      description: "Add Generate Breedbase Templates plugin"
+sandbox:
+  image: "djw64/sbx-bb-templates"
+  aiFilename: CLAUDE.md
+  entrypoint:
+    run: ["claude", "--dangerously-skip-permissions"]
+
+network:
+  serviceDomains:
+    api.anthropic.com: anthropic
+    console.anthropic.com: anthropic
+  serviceAuth:
+    anthropic:
+      headerName: x-api-key
+      valueFormat: "%s"
+  allowedDomains:
+    - "claude.com:443"
+
+credentials:
+  sources:
+    anthropic:
+      env:
+        - ANTHROPIC_API_KEY
 
 agentContext: |
   The project directory should contain breeder-provided data that needs to be converted into

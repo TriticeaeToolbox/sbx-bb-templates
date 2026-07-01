@@ -1,0 +1,17 @@
+schemaVersion: "1"
+kind: mixin
+name: bb-templates
+displayName: Generate BB Templates
+description: Adds the generate-breedbase-templates skill and some additional python dependencies
+
+commands:
+  install:
+    - command: "apt-get update && apt-get install -y python3-openpyxl python3-pandas"
+      user: "0"
+      description: "Install additional python dependencies"
+    - command: "claude plugin marketplace add TriticeaeToolbox/t3-marketplace"
+      user: "1000"
+      description: "Add T3 plugin marketplace"
+    - command: "claude plugin install generate-breedbase-templates@t3-marketplace"
+      user: "1000"
+      description: "Add Generate Breedbase Templates plugin"

@@ -1,0 +1,75 @@
+#! /usr/bin/env bash
+
+#
+# START A BB TEMPLATES DOCKER SANDBOX
+# ./sbx-bb-templates [-d] [project_directory]
+# -d = flag to run detached / in background (just starts the sandbox)
+# project_directory = path to directory that will be mounted into the sandbox
+#
+# Examples
+# ./sbx-bb-templates                       start the sandbox and claude code in the current directory
+# ./sbx-bb-templates /path/to/files        start the sandbox and claude code in the specified directory
+# ./sbx-bb-templates -d                    start the sandbox in the current directory
+# ./sbx-bb-templates -d /path/to/files     start the sandbox in the specified directory
+#
+
+# Set the sbx subcommand to use (default to run, unless -d)
+CMD="run"
+while getopts "dt" opt; do
+    case $opt in
+        d)
+            CMD="create"
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+# name of base template to use
+TEMPLATE="docker/sandbox-templates:claude-code-docker"
+
+# path to kit directory (parent dir of this script)
+KIT_DIR="$(dirname "$(readlink -f "$0")")"
+
+# path to project workspace
+# default to current working directory, if not explicitly set
+WS_DIR=${1:-$(pwd)}
+
+# Set sandbox name (basename with lowercase with special chars replaced)
+NAME=$(basename "$WS_DIR")
+NAME="${NAME,,}"
+NAME="${NAME//[^[:alnum:]]/-}"
+NAME="claude-$NAME"
+
+# Get existing sandboxes
+running=$(sbx ls -q)
+
+#
+# EXISTING SANDBOX
+#
+if printf '%s\n' "$running" | grep -Fxq "$NAME"; then
+    
+    # already created, ignore
+    if [[ $CMD == "create" ]]; then
+        echo "The sandbox $NAME is already running..."
+
+    # restart in existing sandbox
+    else
+        sbx run --name "$NAME"
+        exit 0
+    fi
+
+#
+# NEW SANDBOX
+#
+else
+
+    # Create a new sandbox (using create or run command)
+    echo "--> Starting sandbox in workspace $WS_DIR..."
+    echo "    name: $NAME"
+    echo "    template: $TEMPLATE"
+    echo "    kit: $KIT_DIR"
+    echo "    command: $CMD"
+
+    sbx $CMD --name "$NAME" --template "$TEMPLATE" claude --kit "$KIT_DIR" "$WS_DIR" $ARGS
+
+fi

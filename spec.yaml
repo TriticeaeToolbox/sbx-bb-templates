@@ -8,7 +8,7 @@ sandbox:
   image: "djw64/sbx-bb-templates"
   aiFilename: CLAUDE.md
   entrypoint:
-    run: ["claude", "--dangerously-skip-permissions"]
+    run: ["/bin/bash", "-c", "claude plugins update generate-breedbase-templates@t3-marketplace && claude --dangerously-skip-permissions"]
 
 network:
   serviceDomains:
